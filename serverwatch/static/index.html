@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ServerWatch</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+  <header><div><p class="eyebrow">BOUNCER-SRV</p><h1>ServerWatch</h1></div><div id="overall" class="badge unknown">Loading</div></header>
+  <main>
+    <section aria-labelledby="resources-title"><div class="section-title"><h2 id="resources-title">Resources</h2><span id="observed">Waiting for sample</span></div><div id="resource-cards" class="cards"></div><canvas id="chart" width="1000" height="260" aria-label="24 hour resource history"></canvas></section>
+    <section aria-labelledby="services-title"><div class="section-title"><h2 id="services-title">Service health</h2></div><div id="health" class="health-grid"></div></section>
+    <section aria-labelledby="incidents-title"><div class="section-title"><h2 id="incidents-title">Incidents</h2></div><div class="table-wrap"><table><thead><tr><th>Status</th><th>Incident</th><th>Measured</th><th>Opened</th><th>Resolution</th></tr></thead><tbody id="incidents"></tbody></table></div></section>
+    <section aria-labelledby="notifications-title"><div class="section-title"><h2 id="notifications-title">Notification delivery</h2><button id="test-notification" type="button">Send test</button></div><p id="notification-state"></p><div class="table-wrap"><table><thead><tr><th>Time</th><th>Attempt</th><th>Status</th><th>Detail</th></tr></thead><tbody id="notifications"></tbody></table></div></section>
+  </main>
+  <footer>ServerWatch M1 · Single-server, self-observed monitoring</footer>
+  <script src="static/app.js" defer></script>
+</body>
+</html>
+

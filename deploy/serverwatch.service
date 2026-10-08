@@ -1,0 +1,27 @@
+[Unit]
+Description=ServerWatch M1 monitoring service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=serverwatch
+Group=serverwatch
+WorkingDirectory=/opt/serverwatch/app
+EnvironmentFile=/etc/serverwatch/serverwatch.env
+ExecStart=/opt/serverwatch/.venv/bin/uvicorn serverwatch.app:create_app --factory --host 127.0.0.1 --port 8765 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/serverwatch
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
+
