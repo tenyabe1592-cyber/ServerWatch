@@ -28,12 +28,28 @@ async function refresh(){
     const values=status.metric||{}; const labels=[['CPU','cpu_percent','cpu'],['Memory','memory_percent','memory'],['Disk','disk_percent','disk']];
     document.querySelector('#resource-cards').innerHTML=labels.map(([label,key,t])=>`<div class="card"><span>${label}</span><strong>${values[key]===undefined?'—':Number(values[key]).toFixed(1)+'%'}</strong><span>Alert at ${status.thresholds[t]}%</span></div>`).join('');
     document.querySelector('#health').innerHTML=status.health.map(x=>`<div class="health-item"><p><strong>${esc(x.name)}</strong><br><span class="detail">${esc(x.detail)}</span></p><span class="status ${x.status}">${x.status}</span></div>`).join('')||'<p>No health samples.</p>';
-    document.querySelector('#incidents').innerHTML=incidents.map(x=>`<tr><td><span class="status ${x.status==='open'?'unhealthy':'healthy'}">${esc(x.status)}</span></td><td>${esc(x.title)}<br><span class="detail">${esc(x.condition)}</span></td><td>${esc(x.measured_value)}</td><td>${when(x.opened_at)}</td><td>${x.resolved_at?when(x.resolved_at):x.acknowledged_at?'Acknowledged':'Open'}</td></tr>`).join('')||'<tr><td colspan="5">No incidents.</td></tr>';
+    document.querySelector('#incidents').innerHTML = incidents.map(x => `
+      <tr>
+        <td data-label="Status"><span class="status ${x.status === 'open' ? 'unhealthy' : 'healthy'}">${esc(x.status)}</span></td>
+        <td data-label="Incident">${esc(x.title)}<br><span class="detail">${esc(x.condition)}</span></td>
+        <td data-label="Measured">${esc(x.measured_value)}</td>
+        <td data-label="Opened">${when(x.opened_at)}</td>
+        <td data-label="Resolution">${x.resolved_at ? when(x.resolved_at) : x.acknowledged_at ? 'Acknowledged' : 'Open'}</td>
+      </tr>
+    `).join('') || '<tr class="empty-row"><td colspan="5">No incidents.</td></tr>';
     document.querySelector('#notification-state').textContent=status.notifications_configured?'SMTP notification channel configured.':'SMTP notification channel is not configured; attempts are recorded as skipped.';
-    document.querySelector('#notifications').innerHTML=notifications.map(x=>`<tr><td>${when(x.attempted_at)}</td><td>${x.attempt_number}</td><td><span class="status ${x.status==='sent'?'healthy':x.status==='failed'?'unhealthy':'unknown'}">${esc(x.status)}</span></td><td>${esc(x.detail)}</td></tr>`).join('')||'<tr><td colspan="4">No delivery attempts.</td></tr>';
-    drawChart(metrics);
+    document.querySelector('#notifications').innerHTML = notifications.map(x => `
+      <tr>
+        <td data-label="Time">${when(x.attempted_at)}</td>
+        <td data-label="Attempt">${x.attempt_number}</td>
+        <td data-label="Status"><span class="status ${x.status === 'sent' ? 'healthy' : x.status === 'failed' ? 'unhealthy' : 'unknown'}">${esc(x.status)}</span></td>
+        <td data-label="Detail">${esc(x.detail)}</td>
+      </tr>
+    `).join('') || '<tr class="empty-row"><td colspan="4">No delivery attempts.</td></tr>';
+	drawChart(metrics);
   } catch(error){const overall=document.querySelector('#overall');overall.className='badge unknown';overall.textContent='Unavailable';console.error(error)}
 }
+
 document.querySelector('#test-notification').addEventListener('click',async event=>{event.currentTarget.disabled=true;try{await api('api/notifications/test',{method:'POST'});alert('Test notification sent.')}catch(error){alert(`Notification failed: ${error.message}`)}finally{event.currentTarget.disabled=false;refresh()}});
 refresh(); setInterval(refresh,30000);
 
